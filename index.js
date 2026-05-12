@@ -124,7 +124,12 @@ app.post("/webhook/whatsapp", async (req, res) => {
   // Extraer datos de lead si los menciona (simple heurística)
   const emailMatch = incomingMsg.match(/[\w.-]+@[\w.-]+\.\w+/);
   if (emailMatch) session.lead.email = emailMatch[0];
+const phoneMatch = incomingMsg.match(/(\+34|0034)?[6789]\d{8}/);
+if (phoneMatch) session.lead.phone = phoneMatch[0];
 
+if (incomingMsg.length > 2 && incomingMsg.length < 40 && !phoneMatch && !emailMatch) {
+  if (!session.lead.name) session.lead.name = incomingMsg;
+}
   let replyText;
   let escalated = false;
 
