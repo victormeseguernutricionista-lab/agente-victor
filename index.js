@@ -71,11 +71,29 @@ function shouldEscalate(text) {
 
 // ── Notificar escalado (adapta a tu canal: email, Slack, etc.) ─
 async function notifyEscalation(phone, session) {
-  console.log("🚨 ESCALADO A HUMANO");
-  console.log("  Teléfono:", phone);
-  console.log("  Lead:", session.lead);
-  console.log("  Historial:", session.messages.slice(-4));
-  // Aquí integra: sendgrid, slack webhook, etc.
+  console.log("🚨 ESCALADO A HUMANO - Teléfono:", phone);
+  
+  try {
+    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: "victormeseguernutricionista@gmail.com" }] }],
+        from: { email: "victormeseguernutricionista@gmail.com" },
+        subject: "🔔 Nuevo lead - Agente Victor",
+        content: [{
+          type: "text/plain",
+          value: `Nuevo cliente interesado:\n\nTeléfono: ${phone}\nNombre: ${session.lead.name || "No proporcionado"}\nEmail: ${session.lead.email || "No proporcionado"}\nObjetivo: ${session.lead.goal || "No proporcionado"}`
+        }]
+      })
+    });
+    console.log("Email enviado:", response.status);
+  } catch (err) {
+    console.error("Error enviando email:", err);
+  }
 }
 
 // ── Llamada a Claude ──────────────────────────────────────────
