@@ -127,7 +127,9 @@ app.post("/webhook/whatsapp", async (req, res) => {
 const phoneMatch = incomingMsg.match(/(\+34|0034)?[6789]\d{8}/);
 if (phoneMatch) session.lead.phone = phoneMatch[0];
 
-if (incomingMsg.length > 2 && incomingMsg.length < 40 && !phoneMatch && !emailMatch) {
+const salutations = ["hola", "buenos días", "buenas", "buenas tardes", "buenas noches", "hi", "hello", "hey"];
+const isSalutation = salutations.some(s => incomingMsg.toLowerCase().includes(s));
+if (incomingMsg.length > 2 && incomingMsg.length < 60 && !phoneMatch && !emailMatch && !isSalutation) {
   if (!session.lead.name) session.lead.name = incomingMsg;
 }
   let replyText;
