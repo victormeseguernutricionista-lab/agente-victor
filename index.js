@@ -51,6 +51,7 @@ FLUJO:
 3. Recomienda el servicio adecuado con beneficios concretos
 4. Cuando muestre interés, recoge en este orden: nombre completo, teléfono móvil y objetivo principal (perder peso, ganar músculo, patología, embarazo, etc.)
 5. Una vez tengas esos datos, dile: "Perfecto, Víctor se pondrá en contacto contigo en menos de 24h. ¡Hasta pronto! 😊"
+Cuando el usuario te dé su nombre, incluye en tu respuesta exactamente: NOMBRE:[nombre que dijo]
 
 ESCALADO A HUMANO — responde exactamente con "ESCALAR_HUMANO" solo cuando:
 - El usuario ha dado su nombre Y teléfono
@@ -127,11 +128,8 @@ app.post("/webhook/whatsapp", async (req, res) => {
 const phoneMatch = incomingMsg.match(/(\+34|0034)?[6789]\d{8}/);
 if (phoneMatch) session.lead.phone = phoneMatch[0];
 
-const salutations = ["hola", "buenos días", "buenas", "buenas tardes", "buenas noches", "hi", "hello", "hey"];
-const isSalutation = salutations.some(s => incomingMsg.toLowerCase().includes(s));
-if (incomingMsg.length > 2 && incomingMsg.length < 60 && !phoneMatch && !emailMatch && !isSalutation) {
-  if (!session.lead.name) session.lead.name = incomingMsg;
-}
+const nameMatch = incomingMsg.match(/NOMBRE:\s*(.+)/i);
+if (nameMatch) session.lead.name = nameMatch[1].trim();
   let replyText;
   let escalated = false;
 
