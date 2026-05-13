@@ -128,8 +128,6 @@ app.post("/webhook/whatsapp", async (req, res) => {
 const phoneMatch = incomingMsg.match(/(\+34|0034)?[6789]\d{8}/);
 if (phoneMatch) session.lead.phone = phoneMatch[0];
 
-const nameMatch = incomingMsg.match(/NOMBRE:\s*(.+)/i);
-if (nameMatch) session.lead.name = nameMatch[1].trim();
   let replyText;
   let escalated = false;
 
@@ -148,6 +146,8 @@ if (nameMatch) session.lead.name = nameMatch[1].trim();
 
   // Añadir respuesta al historial
   session.messages.push({ role: "assistant", content: replyText });
+  const nameMatch = replyText.match(/NOMBRE:\s*(.+)/i);
+if (nameMatch) session.lead.name = nameMatch[1].trim();
 
   // Limitar historial a últimos 20 mensajes (evitar tokens excesivos)
   if (session.messages.length > 20) {
